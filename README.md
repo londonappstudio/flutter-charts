@@ -8,7 +8,7 @@ So far this supports the following:
 
 ## Screenshots
 
-![polar-area-chart-example.png](https://github.com/londonappstudio/flutter-charts/raw/master/example/screenshots/polar-area-chart-example.png)
+![polar-area-chart-example.png](https://github.com/londonappstudio/flutter-charts/raw/master/screenshots/polar-area-chart-example.png)
 
 ## QuickStart
 
