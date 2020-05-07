@@ -101,13 +101,21 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Expanded(
                 child: PolarAreaChart.light(
-              ticks: [1,2,3,4,5,6,7],
-                features: ["dog", "cat", "pony"],
-                data: [
-                  [5,5,2],
-                  [3,3,3],
-                  [5,4,4],
+                ticks: [2,3,4,5,6,7,8,9,10,11,12,13],
+                features: [
+                  "dog",
+                  "cat",
+                  "fish",
+                  "sheep",
+                  "goose",
+                  "mouse",
+                  "worm",
+                  "jason",
+                  "gimp",
+                  "badger",
+                  "hitler"
                 ],
+                data: [3,1,5,14,6,2,9,13,5,6,10],
               )
             ),
             Text(

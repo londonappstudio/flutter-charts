@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'dart:math' show pi, cos, sin;
+import 'dart:math' show pi, cos, sin, max;
 
 const defaultColours = [
   Colors.green,
@@ -19,7 +19,7 @@ const defaultColours = [
 class PolarAreaChart extends StatefulWidget {
   final List<int> ticks;
   final List<String> features;
-  final List<List<int>> data;
+  final List<int> data;
   final bool reverseAxis;
   final TextStyle ticksTextStyle;
   final TextStyle featuresTextStyle;
@@ -43,7 +43,7 @@ class PolarAreaChart extends StatefulWidget {
   factory PolarAreaChart.light({
     @required List<int> ticks,
     @required List<String> features,
-    @required List<List<int>> data,
+    @required List<int> data,
     bool reverseAxis = false,
   }) {
     return PolarAreaChart(
@@ -115,7 +115,7 @@ class _PolarAreaChartState extends State<PolarAreaChart>
 class PolarAreaChartPainter extends CustomPainter {
   final List<int> gridLines;
   final List<String> features;
-  final List<List<int>> data;
+  final List<int> values;
   final bool reverseAxis;
   final TextStyle ticksTextStyle;
   final TextStyle featuresTextStyle;
@@ -127,7 +127,7 @@ class PolarAreaChartPainter extends CustomPainter {
   PolarAreaChartPainter(
       this.gridLines,
       this.features,
-      this.data,
+      this.values,
       this.reverseAxis,
       this.ticksTextStyle,
       this.featuresTextStyle,
@@ -141,24 +141,62 @@ class PolarAreaChartPainter extends CustomPainter {
     final centerX = size.width / 2.0;
     final centerY = size.height / 2.0;
     final centerOffset = Offset(centerX, centerY);
-    final radius = math.min(centerX, centerY) * 0.8;
-    final scale = radius / gridLines.last;
+    final radius = math.min(centerX, centerY) * 0.70;
+    final double maxValue = 15; // TODO: Needs to be configured or based on data
+    final scale = radius / maxValue * 2;
+
+    print("");
+
+    var gridLines = [maxValue];
+
+
+    // Take these as a param from somewhere
+
+
+    num degToRad(num deg) => deg * (math.pi / 180.0);
+
+    // Painting the axis for each given feature
+    var segmentSize = 360 / values.length; // Degrees
+    var angle = (2 * pi) / features.length; // Radians
 
     // Painting the chart outline (A circle)
-    var outlinePaint = Paint()
-      ..color = outlineColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..isAntiAlias = true;
+    for(int i = 0; i < features.length; i++){
+
+      Path outline = Path();
+      var outlinePaint = Paint()
+        ..color = graphColors[i%graphColors.length].withOpacity(0.6)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 5.0
+        ..isAntiAlias = true;
+
+      outline.moveTo(centerX, centerY);
+      outline.arcTo(
+          Rect.fromCenter(
+            center: centerOffset,
+            width: scale*maxValue,
+            height: scale*maxValue
+          ),
+          angle*i,
+          angle,
+          true
+      );
+      outline.moveTo(centerX, centerY);
+      outline.close();
+      canvas.drawPath(outline, outlinePaint);
+
+//      canvas.drawCircle(centerOffset, radius, outlinePaint);
+    }
 
     var ticksPaint = Paint()
-      ..color = axisColor
+      ..color = axisColor.withOpacity(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0
       ..isAntiAlias = true;
 
-    canvas.drawCircle(centerOffset, radius, outlinePaint);
+//    canvas.drawCircle(centerOffset, radius, outlinePaint);
 
+    // Painting the circles and labels for the given ticks (could be auto-generated)
+    // The last tick is ignored, since it overlaps with the feature label
     // Painting the circles and labels for the given ticks (could be auto-generated)
     // The last tick is ignored, since it overlaps with the feature label
     var tickDistance = radius / (gridLines.length);
@@ -176,6 +214,37 @@ class PolarAreaChartPainter extends CustomPainter {
         ..layout(minWidth: 0, maxWidth: size.width)
         ..paint(canvas,
             Offset(centerX, centerY - tickRadius - ticksTextStyle.fontSize));
+    });
+
+
+
+    features.asMap().forEach((index, feature) {
+      var xAngle = cos((angle * index) + (angle / 2));
+      var yAngle = sin((angle * index) + (angle / 2));
+
+      var featureOffset =
+      Offset(centerX + radius * xAngle, centerY + radius * yAngle);
+
+//      canvas.drawLine(centerOffset, featureOffset, ticksPaint);
+
+      var featureLabelFontHeight = (featuresTextStyle as TextStyle).fontSize;
+      var featureLabelFontWidth = (featuresTextStyle as TextStyle).fontSize - 4;
+      var labelYOffset = yAngle < 0 ? - featureLabelFontHeight : 0;
+      var labelXOffset =
+      xAngle < 0 ? -featureLabelFontWidth * feature.length : 0;
+
+      var coloredTextStyle = featuresTextStyle.copyWith(color: graphColors[index%graphColors.length]);
+
+      TextPainter(
+        text: TextSpan(text: feature, style: coloredTextStyle),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+      )
+        ..layout(minWidth: 0, maxWidth: size.width)
+        ..paint(
+            canvas,
+            Offset(featureOffset.dx + labelXOffset,
+                featureOffset.dy + labelYOffset));
     });
 
 //    // Painting the axis for each given feature
@@ -208,16 +277,13 @@ class PolarAreaChartPainter extends CustomPainter {
 //                featureOffset.dy + labelYOffset));
 //    });
 
-    // Take these as a param from somewhere
-    var values = [3,1,5,4,6,2,9,13,5,6,10];
 
-    var sweep = 360 / values.length;
 
     // Paint the slices
     for (var i = 0; i < values.length; i++) {
 
       var slicePaint = Paint()
-        ..color = graphColors[i%defaultColours.length].withOpacity(0.9)
+        ..color = graphColors[i%defaultColours.length].withOpacity(0.6)
         ..style = PaintingStyle.fill;
 
       var edgesPaint = Paint()
@@ -227,23 +293,15 @@ class PolarAreaChartPainter extends CustomPainter {
         ..isAntiAlias = true;
 
       var path = Path();
-
-
-      num degToRad(num deg) => deg * (math.pi / 180.0);
-      
       path.moveTo(centerX, centerY); // OK
-
-
-      print("Scale: $scale ");
-//      Offset(centerX,centerY), 50.0,50.0
       path.arcTo(
           Rect.fromCenter(
               center: centerOffset,
               width: scale * values[i],
               height: scale * values[i]
           ),
-          degToRad(i*sweep),
-          degToRad(sweep),
+          degToRad(i*segmentSize),
+          degToRad(segmentSize),
           false);
       path.lineTo(centerX, centerY);
 //          lastend+(Math.PI*2*(values[i]/myTotal)));
