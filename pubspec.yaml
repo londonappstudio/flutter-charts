@@ -1,6 +1,6 @@
 name: charter
-description: A collection of chart implementations for Flutter
-version: 0.0.1-alpha-2
+description: A collection of chart implementations for Flutter using CustomPaint
+version: 0.0.1-alpha-3
 homepage: http://www.londonappstudio.com
 
 environment:

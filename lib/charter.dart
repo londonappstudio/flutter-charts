@@ -2,6 +2,8 @@ library flutter_charts;
 
 import 'dart:ui';
 import 'dart:math' as math;
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'dart:math' show pi, cos, sin, max;
@@ -19,7 +21,7 @@ const defaultColours = [
 class PolarAreaChart extends StatefulWidget {
   final List<int> grid;
   final List<String> features;
-  final List<int> data;
+  final List<double> data;
   final TextStyle ticksTextStyle;
   final TextStyle featureLabelsTextStyle;
   final bool drawSegmentDividers;
@@ -39,10 +41,10 @@ class PolarAreaChart extends StatefulWidget {
   factory PolarAreaChart.basic({
     @required List<int> grid,
     @required List<String> features,
-    @required List<int> data,
+    @required List<double> data,
     bool drawSegmentDividers = false,
     TextStyle featuresTextStyle,
-    List<MaterialColor> featureColors = defaultColours
+    List<Color> featureColors = defaultColours
   }) {
     return PolarAreaChart(
       grid: grid,
@@ -86,6 +88,12 @@ class _PolarAreaChartState extends State<PolarAreaChart>
   }
 
   @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   void didUpdateWidget(PolarAreaChart oldWidget) {
     super.didUpdateWidget(oldWidget);
 
@@ -113,7 +121,7 @@ class _PolarAreaChartState extends State<PolarAreaChart>
 class PolarAreaChartPainter extends CustomPainter {
   final List<int> gridLines;
   final List<String> features;
-  final List<int> values;
+  final List<double> values;
   final TextStyle ticksTextStyle;
   final TextStyle featuresTextStyle;
   final List<Color> featureColors;
@@ -225,15 +233,15 @@ class PolarAreaChartPainter extends CustomPainter {
           centerY + labelRadius * yAngle
       );
 
+      var maxLineLength = feature.split("\n").map((e) => e.length).reduce((value, element) => math.max(value, element));
       var featureLabelFontHeight = featuresTextStyle.fontSize;
       var featureLabelFontWidth = featuresTextStyle.fontSize - 4;
       var labelYOffset = yAngle < 0 ? - featureLabelFontHeight : 0;
       var labelXOffset = xAngle < 0 ?
-              (featureLabelFontWidth * feature.length * xAngle) : // Left side
-              - (featureLabelFontWidth * feature.length * (1 - xAngle)) / 2; // Right side
+              (featureLabelFontWidth * maxLineLength * xAngle) : // Left side
+              - (featureLabelFontWidth * maxLineLength * (1 - xAngle)) / 2; // Right side
 
       var coloredTextStyle = featuresTextStyle.copyWith(color: featureColors[index%featureColors.length]);
-
       TextPainter(
         text: TextSpan(text: feature,
               style: coloredTextStyle
@@ -244,15 +252,14 @@ class PolarAreaChartPainter extends CustomPainter {
         ..layout(minWidth: 0, maxWidth: size.width)
         ..paint(
             canvas,
-            Offset(featureOffset.dx + labelXOffset,
-                    featureOffset.dy + labelYOffset));
+            Offset(featureOffset.dx + labelXOffset, featureOffset.dy + labelYOffset));
     });
 
     // Paint the slices
     for (var i = 0; i < values.length; i++) {
 
       var slicePaint = Paint()
-        ..color = featureColors[i%defaultColours.length].withOpacity(0.6)
+        ..color = featureColors[i%featureColors.length].withOpacity(0.6)
         ..style = PaintingStyle.fill;
 
       var path = Path();

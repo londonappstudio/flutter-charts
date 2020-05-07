@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  charter: ^0.0.1-alpha
+  charter: ^0.0.1-alpha-3
 
 
   # The following adds the Cupertino Icons font to your application.

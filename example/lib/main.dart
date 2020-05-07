@@ -108,14 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     "salmon",
                     "potato",
                     "carrot",
-                    "rice",
+                    "rice\ngammonamon",
                     "lentils",
                     "covfefe",
                     "pasta",
                     "beef",
                     "grains"
                   ],
-                  data: [3,1,5,14,6,2,9,13,5,6,10],
+                  data: [3,1,5,14,6.5,2,9.8,13,5,6,10],
                   featuresTextStyle: TextStyle (
                     fontWeight: FontWeight.bold,
                     fontSize: 12
@@ -128,7 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Colors.orange,
                     Colors.yellow,
                     Colors.pink,
-                    Colors.brown
+                    Colors.brown,
+                    Color(0xff374ABE),
+                    Colors.red[600]
                   ]
                 )
             ),
