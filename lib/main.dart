@@ -100,23 +100,37 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-                child: PolarAreaChart.light(
-                ticks: [2,3,4,5,6,7,8,9,10,11,12,13],
-                features: [
-                  "dog",
-                  "cat",
-                  "fish",
-                  "sheep",
-                  "goose",
-                  "mouse",
-                  "worm",
-                  "jason",
-                  "gimp",
-                  "badger",
-                  "hitler"
-                ],
-                data: [3,1,5,14,6,2,9,13,5,6,10],
-              )
+                child: PolarAreaChart.basic(
+                  grid: [5,10,15], // Scale for the whole chart
+                  features: [
+                    "broccoli",
+                    "cheese",
+                    "salmon",
+                    "potato",
+                    "carrot",
+                    "rice",
+                    "lentils",
+                    "covfefe",
+                    "pasta",
+                    "beef",
+                    "grains"
+                  ],
+                  data: [3,1,5,14,6,2,9,13,5,6,10],
+                  featuresTextStyle: TextStyle (
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12
+                  ),
+                  drawSegmentDividers: true,
+                  featureColors: [
+                    Colors.green,
+                    Colors.blue,
+                    Colors.red,
+                    Colors.orange,
+                    Colors.yellow,
+                    Colors.pink,
+                    Colors.brown
+                  ]
+                )
             ),
             Text(
               '$_counter',
