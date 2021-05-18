@@ -1,6 +1,6 @@
 import 'package:charter/flutter_test.dart';
 
-import 'package:charter/charter.dart';
+import 'package:charter/polarareachart.dart';
 
 void main() {
   test('adds one to input values', () {

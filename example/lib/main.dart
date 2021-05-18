@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Charter Demo App',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Charter Demo App'),
     );
   }
 }
@@ -54,7 +54,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void nextRendering() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -99,53 +99,28 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-                child: PolarAreaChart.basic(
-                  grid: [5,10,15], // Scale for the whole chart
-                  features: [
-                    "broccoli",
-                    "cheese",
-                    "salmon",
-                    "potato",
-                    "carrot",
-                    "rice\ngammonamon",
-                    "lentils",
-                    "covfefe",
-                    "pasta",
-                    "beef",
-                    "grains"
-                  ],
-                  data: [3,1,5,14,6.5,2,9.8,13,5,6,10],
-                  featuresTextStyle: TextStyle (
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12
-                  ),
-                  drawSegmentDividers: true,
-                  featureColors: [
-                    Colors.green,
-                    Colors.blue,
-                    Colors.red,
-                    Colors.orange,
-                    Colors.yellow,
-                    Colors.pink,
-                    Colors.brown,
-                    Color(0xff374ABE),
-                    Colors.red[600]
-                  ]
+
+            Row(
+              children: <Widget>[
+                RaisedButton(
+                    onPressed: () { print("Pressed back"); },
+                    child: Text("Previous"),
+                    color: Colors.deepPurpleAccent,
+                ),
+                RaisedButton(
+                  onPressed: () { print("Pressed next"); },
+                  child: Text("Next"),
+                  color: Colors.deepPurpleAccent,
                 )
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            Expanded(
+                child:
+
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      )
     );
   }
 }
